@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-height: 500px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Todo List Styles */
+        .todo-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .todo-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .todo-item:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+
+        .todo-item.completed span {
+            text-decoration: line-through;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        /* Pomodoro Timer Styles */
+        .timer-display {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .timer-time {
+            font-size: 5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .timer-mode {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Notes Styles */
+        .notes-area {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        /* Habit Tracker Styles */
+        .habit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .habit-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .habit-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .habit-streak {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .habit-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Goal Tracker Styles */
+        .goal-item {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .timer-time {
+                font-size: 3.5em;
+            }
+
+            .habit-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Productivity Hub</h1>
+            <p>Your all-in-one workspace for getting things done</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('todos')">📝 Tasks</button>
+            <button class="tab" onclick="switchTab('pomodoro')">⏱️ Pomodoro</button>
+            <button class="tab" onclick="switchTab('notes')">📔 Notes</button>
+            <button class="tab" onclick="switchTab('habits')">✅ Habits</button>
+            <button class="tab" onclick="switchTab('goals')">🎯 Goals</button>
+        </div>
+
+        <div class="content">
+            <!-- Todo List Section -->
+            <div id="todos" class="section active">
+                <h2 style="margin-bottom: 20px;">My Tasks</h2>
+                <div class="todo-input-group">
+                    <input type="text" class="todo-input" id="todoInput" placeholder="Add a new task..." onkeypress="handleTodoKeypress(event)">
+                    <button class="btn btn-primary" onclick="addTodo()">Add Task</button>
+                </div>
+                <div id="todoList"></div>
+            </div>
+
+            <!-- Pomodoro Timer Section -->
+            <div id="pomodoro" class="section">
+                <h2 style="margin-bottom: 20px; text-align: center;">Pomodoro Timer</h2>
+                <div class="timer-mode">
+                    <button class="mode-btn active" onclick="setMode('work')">Work (25m)</button>
+                    <button class="mode-btn" onclick="setMode('short')">Short Break (5m)</button>
+                    <button class="mode-btn" onclick="setMode('long')">Long Break (15m)</button>
+                </div>
+                <div class="timer-display">
+                    <div class="timer-time" id="timerDisplay">25:00</div>
+                    <div class="timer-controls">
+                        <button class="btn btn-primary" onclick="startTimer()">Start</button>
+                        <button class="btn btn-danger" onclick="pauseTimer()">Pause</button>
+                        <button class="btn" style="background: #6b7280; color: white;" onclick="resetTimer()">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div id="notes" class="section">
+                <h2 style="margin-bottom: 20px;">Quick Notes</h2>
+                <textarea class="notes-area" id="notesArea" placeholder="Write your notes here..."></textarea>
+                <button class="btn btn-primary" style="margin-top: 15px;" onclick="saveNotes()">Save Notes</button>
+            </div>
+
+            <!-- Habits Section -->
+            <div id="habits" class="section">
+                <h2 style="margin-bottom: 20px;">Habit Tracker</h2>
+                <div class="todo-input-group">
+                    <input type="text" class="todo-input" id="habitInput" placeholder="Add a new habit..." onkeypress="handleHabitKeypress(event)">
+                    <button class="btn btn-primary" onclick="addHabit()">Add Habit</button>
+                </div>
+                <div class="habit-grid" id="habitGrid"></div>
+            </div>
+
+            <!-- Goals Section -->
+            <div id="goals" class="section">
+                <h2 style="margin-bottom: 20px;">Goal Tracker</h2>
+                <div class="todo-input-group">
+                    <input type="text" class="todo-input" id="goalInput" placeholder="Add a new goal..." onkeypress="handleGoalKeypress(event)">
+                    <button class="btn btn-primary" onclick="addGoal()">Add Goal</button>
+                </div>
+                <div id="goalList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let todos = [];
+        let habits = [];
+        let goals = [];
+        let timerInterval = null;
+        let timeLeft = 25 * 60;
+        let currentMode = 'work';
+        let isRunning = false;
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Todo List Functions
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            if (text) {
+                todos.push({ id: Date.now(), text, completed: false });
+                input.value = '';
+                renderTodos();
+            }
+        }
+
+        function handleTodoKeypress(e) {
+            if (e.key === 'Enter') addTodo();
+        }
+
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) todo.completed = !todo.completed;
+            renderTodos();
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const list = document.getElementById('todoList');
+            if (todos.length === 0) {
+                list.innerHTML = '<div class="empty-state">No tasks yet. Add one above!</div>';
+                return;
+            }
+            list.innerHTML = todos.map(todo => `
+                <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
+                    <span class="todo-text">${todo.text}</span>
+                    <button class="btn btn-danger" onclick="deleteTodo(${todo.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Pomodoro Timer Functions
+        function setMode(mode) {
+            if (isRunning) return;
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (mode === 'work') timeLeft = 25 * 60;
+            else if (mode === 'short') timeLeft = 5 * 60;
+            else timeLeft = 15 * 60;
+            
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    pauseTimer();
+                    alert('Time is up! Take a break.');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            if (currentMode === 'work') timeLeft = 25 * 60;
+            else if (currentMode === 'short') timeLeft = 5 * 60;
+            else timeLeft = 15 * 60;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // Notes Functions
+        function saveNotes() {
+            const notes = document.getElementById('notesArea').value;
+            alert('Notes saved!');
+        }
+
+        // Habits Functions
+        function addHabit() {
+            const input = document.getElementById('habitInput');
+            const text = input.value.trim();
+            if (text) {
+                habits.push({ id: Date.now(), text, streak: 0 });
+                input.value = '';
+                renderHabits();
+            }
+        }
+
+        function handleHabitKeypress(e) {
+            if (e.key === 'Enter') addHabit();
+        }
+
+        function completeHabit(id) {
+            const habit = habits.find(h => h.id === id);
+            if (habit) habit.streak++;
+            renderHabits();
+        }
+
+        function deleteHabit(id) {
+            habits = habits.filter(h => h.id !== id);
+            renderHabits();
+        }
+
+        function renderHabits() {
+            const grid = document.getElementById('habitGrid');
+            if (habits.length === 0) {
+                grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No habits yet. Start building good habits!</div>';
+                return;
+            }
+            grid.innerHTML = habits.map(habit => `
+                <div class="habit-card">
+                    <div class="habit-name">${habit.text}</div>
+                    <div class="habit-streak">🔥 ${habit.streak} day streak</div>
+                    <div class="habit-actions">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="completeHabit(${habit.id})">✓ Done Today</button>
+                        <button class="btn btn-danger" onclick="deleteHabit(${habit.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Goals Functions
+        function addGoal() {
+            const input = document.getElementById('goalInput');
+            const text = input.value.trim();
+            if (text) {
+                goals.push({ id: Date.now(), text, progress: 0 });
+                input.value = '';
+                renderGoals();
+            }
+        }
+
+        function handleGoalKeypress(e) {
+            if (e.key === 'Enter') addGoal();
+        }
+
+        function updateProgress(id) {
+            const goal = goals.find(g => g.id === id);
+            if (goal && goal.progress < 100) goal.progress += 10;
+            renderGoals();
+        }
+
+        function deleteGoal(id) {
+            goals = goals.filter(g => g.id !== id);
+            renderGoals();
+        }
+
+        function renderGoals() {
+            const list = document.getElementById('goalList');
+            if (goals.length === 0) {
+                list.innerHTML = '<div class="empty-state">No goals yet. Set a goal and track your progress!</div>';
+                return;
+            }
+            list.innerHTML = goals.map(goal => `
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <div class="goal-title">${goal.text}</div>
+                        <span>${goal.progress}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${goal.progress}%"></div>
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="updateProgress(${goal.id})">+10% Progress</button>
+                        <button class="btn btn-danger" onclick="deleteGoal(${goal.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        renderTodos();
+        renderHabits();
+        renderGoals();
+    </script>
+</body>
+</html>
