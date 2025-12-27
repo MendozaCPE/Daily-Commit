@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Productivity Hub</title>
+    <title>Productivity Hub</title>
     <link rel="stylesheet" href="styles/styles.css">
-    
+
 </head>
+
 <body>
     <div class="floating-shapes">
         <div class="shape"></div>
@@ -56,7 +58,8 @@
                     <h2 class="section-title">My Tasks</h2>
                 </div>
                 <div class="todo-input-group">
-                    <input type="text" class="todo-input" id="todoInput" placeholder="What do you need to study today?" onkeypress="handleTodoKeypress(event)">
+                    <input type="text" class="todo-input" id="todoInput" placeholder="What do you need to study today?"
+                        onkeypress="handleTodoKeypress(event)">
                     <button class="btn btn-primary" onclick="addTodo()">Add Task</button>
                 </div>
                 <div id="todoList"></div>
@@ -82,7 +85,8 @@
                     <div class="timer-controls">
                         <button class="btn btn-primary" onclick="startTimer()">▶️ Start</button>
                         <button class="btn btn-danger" onclick="pauseTimer()">⏸️ Pause</button>
-                        <button class="btn" style="background: linear-gradient(135deg, #6b7280, #4b5563); color: white;" onclick="resetTimer()">🔄 Reset</button>
+                        <button class="btn" style="background: linear-gradient(135deg, #6b7280, #4b5563); color: white;"
+                            onclick="resetTimer()">🔄 Reset</button>
                     </div>
                 </div>
             </div>
@@ -93,7 +97,8 @@
                     <span class="section-icon">✏️</span>
                     <h2 class="section-title">Quick Notes</h2>
                 </div>
-                <textarea class="notes-area" id="notesArea" placeholder="✨ Write your study notes, ideas, or important reminders here..."></textarea>
+                <textarea class="notes-area" id="notesArea"
+                    placeholder="✨ Write your study notes, ideas, or important reminders here..."></textarea>
                 <button class="btn btn-primary" style="margin-top: 20px;" onclick="saveNotes()">💾 Save Notes</button>
             </div>
 
@@ -104,7 +109,8 @@
                     <h2 class="section-title">Habit Tracker</h2>
                 </div>
                 <div class="todo-input-group">
-                    <input type="text" class="todo-input" id="habitInput" placeholder="What habit do you want to build?" onkeypress="handleHabitKeypress(event)">
+                    <input type="text" class="todo-input" id="habitInput" placeholder="What habit do you want to build?"
+                        onkeypress="handleHabitKeypress(event)">
                     <button class="btn btn-primary" onclick="addHabit()">Add Habit</button>
                 </div>
                 <div class="habit-grid" id="habitGrid"></div>
@@ -117,7 +123,8 @@
                     <h2 class="section-title">Goal Tracker</h2>
                 </div>
                 <div class="todo-input-group">
-                    <input type="text" class="todo-input" id="goalInput" placeholder="What's your academic goal?" onkeypress="handleGoalKeypress(event)">
+                    <input type="text" class="todo-input" id="goalInput" placeholder="What's your academic goal?"
+                        onkeypress="handleGoalKeypress(event)">
                     <button class="btn btn-primary" onclick="addGoal()">Add Goal</button>
                 </div>
                 <div id="goalList"></div>
@@ -201,11 +208,11 @@
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-            
+
             if (mode === 'work') timeLeft = 25 * 60;
             else if (mode === 'short') timeLeft = 5 * 60;
             else timeLeft = 15 * 60;
-            
+
             updateTimerDisplay();
         }
 
@@ -238,7 +245,7 @@
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            document.getElementById('timerDisplay').textContent = 
+            document.getElementById('timerDisplay').textContent =
                 `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
 
@@ -281,7 +288,7 @@
             if (habits.length === 0) {
                 grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">⭐</div>No habits yet. Start building good study habits!</div>';
                 return;
-                        }
+            }
 
             grid.innerHTML = habits.map(habit => `
                 <div class="habit-card">
@@ -358,4 +365,5 @@
         };
     </script>
 </body>
+
 </html>
