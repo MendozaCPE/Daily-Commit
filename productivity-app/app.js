@@ -135,29 +135,45 @@ function updateCurrentDate() {
     }
 }
 
+// Helper to get YYYY-MM-DD
+function getISODate(d) {
+    return d.toISOString().split('T')[0];
+}
+
 function updateDashboardStats() {
     const todayPomodoros = document.getElementById('todayPomodoros');
-    if (todayPomodoros) todayPomodoros.textContent = state.pomodoro.sessionsCompleted;
+    if (todayPomodoros) {
+        const todayStr = getISODate(new Date());
+        // Calculate from daily sessions to be accurate
+        const todayCount = state.focusSessions.filter(s => s.created_at && s.created_at.startsWith(todayStr)).length;
+        todayPomodoros.textContent = todayCount;
+    }
 
     const todayTasks = document.getElementById('todayTasks');
     if (todayTasks) {
+        // Note: Tasks don't have completed_at timestamp in DB yet, so showing total completed
         const completed = state.tasks.filter(t => t.completed).length;
         todayTasks.textContent = completed;
     }
 
     const todayHabits = document.getElementById('todayHabits');
     if (todayHabits) {
-        const today = new Date().toDateString();
+        const todayStr = getISODate(new Date());
         const total = state.habits.length;
-        const completed = state.habits.filter(h => h.completedDates && h.completedDates.includes(today)).length;
+        const completed = state.habits.filter(h => h.completedDates && h.completedDates.includes(todayStr)).length;
         const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
         todayHabits.textContent = `${percentage}%`;
     }
 
     const todayFocusTime = document.getElementById('todayFocusTime');
     if (todayFocusTime) {
-        const hours = Math.floor(state.pomodoro.totalFocusTime / 60);
-        const minutes = state.pomodoro.totalFocusTime % 60;
+        const todayStr = getISODate(new Date());
+        const todayMinutes = state.focusSessions
+            .filter(s => s.created_at && s.created_at.startsWith(todayStr))
+            .reduce((acc, s) => acc + parseInt(s.duration || 0), 0);
+
+        const hours = Math.floor(todayMinutes / 60);
+        const minutes = todayMinutes % 60;
         todayFocusTime.textContent = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
     }
 
@@ -187,10 +203,7 @@ function updateAllCharts() {
             date.setDate(date.getDate() - i);
             labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
 
-            // Calculate focus time for this day (from sessions)
-            // Note: In a real app we might want to aggregate this on backend
-            // For now, we filter loaded focusSessions
-            const dateStr = date.toISOString().split('T')[0];
+            const dateStr = getISODate(date);
             const dayMinutes = state.focusSessions
                 .filter(s => s.created_at && s.created_at.startsWith(dateStr))
                 .reduce((acc, s) => acc + parseInt(s.duration), 0);
@@ -206,7 +219,7 @@ function updateAllCharts() {
         });
     }
 
-    // 2. Habit Completion Rate (Line Chart)
+    // 2. Habit Completion Chart (Weekly)
     if (document.getElementById('habitCompletionChart')) {
         const chart = new ChartRenderer('habitCompletionChart');
         const today = new Date();
@@ -220,14 +233,12 @@ function updateAllCharts() {
             const label = date.toLocaleDateString('en-US', { weekday: 'short' });
             labels.push(label);
 
-            const dateStr = date.toDateString();
+            const dateStr = getISODate(date);
             const totalHabits = state.habits.length;
             if (totalHabits > 0) {
-                // Check local array structure
                 let completedCount = 0;
                 state.habits.forEach(h => {
-                    // Check both date formats just in case
-                    if (h.completedDates && (h.completedDates.includes(dateStr) || h.completedDates.includes(date.toISOString().split('T')[0]))) {
+                    if (h.completedDates && h.completedDates.includes(dateStr)) {
                         completedCount++;
                     }
                 });
@@ -252,13 +263,41 @@ function calculateCurrentStreak() {
     if (state.habits.length === 0) return 0;
     let streak = 0;
     const today = new Date();
+
+    // Check if the streak continues today
+    // If ANY habit done today, streak is alive
+    const todayStr = getISODate(today);
+    const doneToday = state.habits.some(h => h.completedDates && h.completedDates.includes(todayStr));
+
+    // If not done today, start checking from yesterday. 
+    // BUT common streak logic usually includes today if done.
+
+    // Let's iterate backwards.
+    // If day 0 (today) is NOT done, we check day -1. 
+    // If day -1 is done, streak continues.
+    // Basically find the sequence of consecutive days where at least 1 habit was done.
+
+    // Modification: If today is NOT done, we don't count it for the streak number yet, 
+    // but the streak isn't "broken" until yesterday is also missing.
+    // Actually simpler: Just count consecutive days in the past where (any habit completed).
+
     for (let i = 0; i < 365; i++) {
         const checkDate = new Date(today);
         checkDate.setDate(checkDate.getDate() - i);
-        const dateStr = checkDate.toDateString();
-        const completedToday = state.habits.filter(h => h.completedDates && h.completedDates.includes(dateStr)).length;
-        if (completedToday > 0) streak++;
-        else if (i > 0) break;
+        const dateStr = getISODate(checkDate);
+
+        const completedOnDay = state.habits.filter(h => h.completedDates && h.completedDates.includes(dateStr)).length;
+
+        if (completedOnDay > 0) {
+            streak++;
+        } else {
+            // If it's today (i=0) and not done, we don't break yet, we just don't add to streak (unless we want 'current streak' to include yesterday if today not done)
+            // Providing "Current Streak" usually means "Consecutive days up to today/yesterday".
+            // If I did it yesterday but not yet today, streak is 1.
+            // If I did it today, streak is 2.
+            if (i === 0) continue;
+            else break;
+        }
     }
     return streak;
 }
