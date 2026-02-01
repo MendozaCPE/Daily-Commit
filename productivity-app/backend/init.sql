@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS habits (
     id BIGINT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     color VARCHAR(7) NOT NULL,
-    completed_dates TEXT, -- JSON string or comma-separated dates
+    completed_dates TEXT, -- JSON array of dates ["2024-01-01", "2024-01-02"]
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -31,15 +31,15 @@ CREATE TABLE IF NOT EXISTS goals (
 CREATE TABLE IF NOT EXISTS focus_sessions (
     id BIGINT PRIMARY KEY,
     task_name VARCHAR(255),
-    duration INT, -- in minutes
+    duration INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Pomodoro Stats (Single Row or simplified)
+-- Pomodoro Stats
 CREATE TABLE IF NOT EXISTS pomodoro_stats (
     id INT PRIMARY KEY DEFAULT 1,
     sessions_completed INT DEFAULT 0,
-    total_focus_time INT DEFAULT 0 -- in minutes
+    total_focus_time INT DEFAULT 0
 );
 
 INSERT IGNORE INTO pomodoro_stats (id, sessions_completed, total_focus_time) VALUES (1, 0, 0);

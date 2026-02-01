@@ -167,7 +167,6 @@
 <body>
     <div class="container">
         <!-- Sidebar Navigation -->
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo">
                 <div class="logo-icon">⚡</div>
