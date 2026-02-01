@@ -123,6 +123,18 @@ switch ($action) {
         }
         break;
 
+
+
+    case 'update_habit':
+        if ($method === 'POST') {
+            $stmt = $conn->prepare("UPDATE habits SET name = ?, color = ? WHERE id = ?");
+            $stmt->bind_param("ssi", $input['name'], $input['color'], $input['id']);
+            
+            if ($stmt->execute()) echo json_encode(["status" => "success"]);
+            else echo json_encode(["error" => $stmt->error]);
+        }
+        break;
+
     case 'update_habit_dates':
         if ($method === 'POST') {
             // Expects 'id' and 'completedDates' array
