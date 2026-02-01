@@ -398,28 +398,16 @@ body{
 <div class="container">
 
 <aside class="sidebar">
-    <div class="logo">
-        <div class="logo-icon">⚡</div>
-        <h1>ProductivityHub</h1>
-    </div>
-
+    <div class="logo"><div class="logo-icon">⚡</div><h1>ProductivityHub</h1></div>
     <nav class="nav-menu">
-        <a href="dashboard.php" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
-        <a href="pomodoro.php" class="nav-item active"><span class="nav-icon">☕</span><span class="nav-label">Pomodoro</span></a>
-        <a href="habits.php" class="nav-item"><span class="nav-icon">✨</span><span class="nav-label">Habits</span></a>
-        <a href="tasks.php" class="nav-item"><span class="nav-icon">✓</span><span class="nav-label">Tasks</span></a>
-        <a href="goals.php" class="nav-item"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
-        <a href="focus.php" class="nav-item"><span class="nav-icon">🧘</span><span class="nav-label">Focus</span></a>
+        <a href="dashboard.php" class="nav-item">📊 Dashboard</a>
+        <a href="pomodoro.php" class="nav-item active">☕ Pomodoro</a>
+        <a href="habits.php" class="nav-item">✨ Habits</a>
+        <a href="tasks.php" class="nav-item">✓ Tasks</a>
+        <a href="goals.php" class="nav-item">🎯 Goals</a>
+        <a href="focus.php" class="nav-item">🧘 Focus</a>
     </nav>
-
-    <div class="sidebar-footer">
-        <div class="streak-badge" style="background:transparent;border:none;padding:0">
-            <span style="font-size:1.2rem">🔥</span>
-            <span style="font-weight:700;color:var(--text-primary)">
-                Day Streak: <span id="currentStreak">0</span>
-            </span>
-        </div>
-    </div>
+    <div class="sidebar-footer">🔥 Day Streak: <span id="currentStreak">0</span></div>
 </aside>
 
 <main class="main-content">
